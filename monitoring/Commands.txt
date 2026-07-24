@@ -1,0 +1,68 @@
+sudo apt update && sudo apt upgrade -y
+
+sudo apt install docker.io -y
+
+sudo systemctl start docker
+sudo systemctl enable docker
+
+sudo usermod -aG docker $USER
+newgrp docker
+docker ps
+
+docker network create monitoring
+docker network ls
+
+docker run -d --name portfolio -p 80:80 --restart unless-stopped <dockerhubrepo>/portfolio-website:latest
+
+mkdir -p ~/monitoring/prometheus
+nano ~/monitoring/prometheus/prometheus.yml
+global:
+scrape_interval: 15s
+
+scrape_configs:
+
+• job_name: "prometheus"
+static_configs: 
+◦ targets: 
+▪ "prometheus:9090"
+
+• job_name: "node-exporter"
+static_configs: 
+◦ targets: 
+▪ "node-exporter:9100"
+
+• job_name: "cadvisor"
+static_configs: 
+◦ targets: 
+▪ "cadvisor:8080"
+
+docker run -d 
+ --name node-exporter 
+ --network monitoring 
+ -p 9100:9100 
+ prom/node-exporter
+
+docker run -d 
+ --name cadvisor 
+ --network monitoring 
+ -p 8080:8080 
+ --privileged 
+ -v /:/rootfs:ro 
+ -v /var/run:/var/run:ro 
+ -v /sys:/sys:ro 
+ -v /var/lib/docker:/var/lib/docker:ro 
+ -v /dev/disk:/dev/disk:ro 
+ gcr.io/cadvisor/cadvisor:latest
+
+docker run -d 
+ --name prometheus 
+ --network monitoring 
+ -p 9090:9090 
+ -v ~/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml 
+ prom/prometheus
+
+docker run -d 
+ --name grafana 
+ --network monitoring 
+ -p 3000:3000 
+ grafana/grafana
