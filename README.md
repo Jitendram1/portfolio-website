@@ -197,9 +197,7 @@ portfolio-webiste/
 │   ├── prometheus/
 │   │   └── prometheus.yml
 │   │
-│   └── grafana/
-│       ├── ec2-dashboard.json
-│       └── docker-dashboard.json
+│   └── commands.txt
 │
 ├── Dockerfile
 ├── Jenkinsfile
@@ -261,7 +259,7 @@ Example:
 ```dockerfile
 FROM nginx:alpine
 
-COPY app/ /usr/share/nginx/html/
+COPY .app/ /usr/share/nginx/html/
 
 EXPOSE 80
 ```
@@ -514,107 +512,31 @@ The dashboard is powered by Node Exporter metrics collected by Prometheus.
 
 ## Dashboard 2 — Docker Container Monitoring
 
-This dashboard monitors Docker containers using cAdvisor.
-
-Metrics include:
-
-- Running Containers
-- Container CPU Usage
-- Container Memory Usage
-- Network Received
-- Network Transmitted
-- Container Resource Consumption
-
-Example metrics:
-
-```promql
-container_cpu_usage_seconds_total
-```
-
-```promql
-container_memory_usage_bytes
-```
-
-```promql
-container_network_receive_bytes_total
-```
-
-```promql
-container_network_transmit_bytes_total
-```
-
----
-
-# 🔍 Example PromQL Queries
-
-## EC2 CPU Usage
-
-```promql
-100 - (
-  avg by (instance) (
-    rate(node_cpu_seconds_total{mode="idle"}[5m])
-  ) * 100
-)
-```
-
----
-
-## EC2 Memory Usage
-
-```promql
-100 * (
-  1 -
-  node_memory_MemAvailable_bytes
-  /
-  node_memory_MemTotal_bytes
-)
-```
-
----
-
-## EC2 Disk Usage
-
-```promql
-100 * (
-  1 -
-  node_filesystem_avail_bytes
-  /
-  node_filesystem_size_bytes
-)
-```
-
----
-
-## Container CPU Usage
-
-```promql
-sum by (name) (
-  rate(container_cpu_usage_seconds_total{name!=""}[5m])
-) * 100
-```
-
----
-
-## Container Memory Usage
-
-```promql
-container_memory_usage_bytes{name!=""}
-```
-
----
-
-## Target Health
-
-```promql
-up
-```
-
-A value of:
+This project uses the popular cadvisor dashboard:
 
 ```text
-1 = Target is UP
-0 = Target is DOWN
+Dashboard ID: 19792
 ```
+
+To import:
+
+```text
+Grafana
+    ↓
+Dashboards
+    ↓
+New
+    ↓
+Import
+    ↓
+Enter Dashboard ID: 1860
+    ↓
+Select Prometheus Data Source
+    ↓
+Import
+```
+
+The dashboard is powered by cadvisor metrics collected by Prometheus.
 
 ---
 
