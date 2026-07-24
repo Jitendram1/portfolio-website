@@ -40,12 +40,14 @@ docker run -d
  --name node-exporter 
  --network monitoring 
  -p 9100:9100 
+ --restart unless-stopped
  prom/node-exporter
 
 docker run -d 
  --name cadvisor 
  --network monitoring 
  -p 8080:8080 
+ --restart unless-stopped
  --privileged 
  -v /:/rootfs:ro 
  -v /var/run:/var/run:ro 
@@ -58,7 +60,8 @@ docker run -d
  --name prometheus 
  --network monitoring 
  -p 9090:9090 
- -v ~/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml 
+ --restart unless-stopped
+ -v ~/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml 
  prom/prometheus
 
 docker run -d 
