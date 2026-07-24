@@ -69,3 +69,8 @@ docker run -d
  --network monitoring 
  -p 3000:3000 
  grafana/grafana
+
+
+grafana dashboard template
+node-exporter id: 1860
+cadvisor id: 19792
